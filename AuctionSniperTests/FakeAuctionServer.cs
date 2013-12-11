@@ -72,12 +72,12 @@ namespace AuctionSniperTests
             _jc.Dispose();
         }
 
-        public void hasReceivedJoinRequestFromSniper()
+        public void HasReceivedJoinRequestFromSniper()
         {
             Assert.IsTrue(_listener.ReceivesAMessage());
         }
 
-        internal void announceClosed()
+        internal void AnnounceClosed()
         {
             _jc.Message("sniper@jgroszko-server", "Closed");
         }

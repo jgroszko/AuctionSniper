@@ -73,7 +73,7 @@ namespace AuctionSniperTests
         }
         #endregion
 
-        internal void showsSniperHasLostAuction()
+        internal void ShowsSniperHasLostAuction()
         {
             Window.ShowsSniperStatus(STATUS_LOST);
         }

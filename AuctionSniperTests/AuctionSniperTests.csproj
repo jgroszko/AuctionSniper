@@ -63,7 +63,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AuctionSniperDriver.cs" />
-    <Compile Include="AuctionSniperTests.cs" />
+    <Compile Include="AuctionSniperEndToEndTests.cs" />
     <Compile Include="FakeAuctionServer.cs" />
     <Compile Include="MainWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

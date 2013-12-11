@@ -10,21 +10,21 @@ using TestStack.White;
 namespace AuctionSniperTests
 {
     [TestClass]
-    public class AuctionSniperTests
+    public class AuctionSniperEndToEndTests
     {
-        [TestMethod]
-        public void AuctionSniperEndToEndTest()
-        {
-            string auctionId = "54321";
+        static string auctionId = "54321";
 
+        [TestMethod]
+        public void SniperJoinsAuctionUntilAuctionCloses()
+        {
             using(AuctionSniperDriver application = new AuctionSniperDriver())
             using(var auction = new FakeAuctionServer(auctionId))
             {
                 auction.StartSellingItem();
                 application.StartBiddingIn(auctionId);
-                auction.hasReceivedJoinRequestFromSniper();
-                auction.announceClosed();
-                application.showsSniperHasLostAuction();
+                auction.HasReceivedJoinRequestFromSniper();
+                auction.AnnounceClosed();
+                application.ShowsSniperHasLostAuction();
             }
         }
     }
