@@ -1,4 +1,5 @@
-﻿using jabber.client;
+﻿using AuctionSniper.Common;
+using jabber.client;
 using jabber.protocol.client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AuctionSniperTests
 {
-    public class SingleMessageListener
+    public class SingleMessageListener : IMessageListener
     {
         JabberClient _jc;
 

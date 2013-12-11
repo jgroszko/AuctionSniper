@@ -15,6 +15,8 @@ namespace AuctionSniper.MainWindow
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(MainWindowViewModel));
 
+        private AuctionMessageTranslator _auctionMessageTranslator = new AuctionMessageTranslator();
+
         private int _auctionId;
         public int AuctionId
         {
@@ -68,7 +70,9 @@ namespace AuctionSniper.MainWindow
             AuctionId = int.Parse(Environment.GetCommandLineArgs()[1]);
 
             XmppService.Instance.OnAuthenticated += Authenticated;
-            XmppService.Instance.OnMessage += Message;
+            XmppService.Instance.OnMessage += _auctionMessageTranslator.ProcessMessage;
+
+            _auctionMessageTranslator.OnAuctionClose += AuctionClosed;
 
             XmppService.Instance.Connect();
         }
@@ -80,7 +84,7 @@ namespace AuctionSniper.MainWindow
             Status = "Joining";
         }
 
-        private void Message(object sender, Message message)
+        private void AuctionClosed(object sender, EventArgs e)
         {
             Status = "Lost";
         }
