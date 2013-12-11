@@ -69,6 +69,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingleMessageListener.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AuctionSniper.Common\AuctionSniper.Common.csproj">
+      <Project>{654425b3-3674-4076-8b14-f8e2558ad59f}</Project>
+      <Name>AuctionSniper.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

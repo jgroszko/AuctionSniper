@@ -1,4 +1,5 @@
-﻿using AuctionSniper.Services;
+﻿using AuctionSniper.Common;
+using AuctionSniper.Services;
 using jabber.protocol.client;
 using System;
 using System.Collections.Generic;
@@ -74,7 +75,7 @@ namespace AuctionSniper.MainWindow
 
         private void Authenticated(object sender, EventArgs e)
         {
-            XmppService.Instance.Message(AuctionUser, "JOIN");
+            XmppService.Instance.Message(AuctionUser, SOLProtocol.JOIN_COMMAND_FORMAT);
 
             Status = "Joining";
         }

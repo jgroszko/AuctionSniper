@@ -22,7 +22,28 @@ namespace AuctionSniperTests
             {
                 auction.StartSellingItem();
                 application.StartBiddingIn(auctionId);
-                auction.HasReceivedJoinRequestFromSniper();
+                auction.HasReceivedJoinRequestFrom(AuctionSniperDriver.SNIPER_ID);
+                auction.AnnounceClosed();
+                application.ShowsSniperHasLostAuction();
+            }
+        }
+
+
+        [TestMethod]
+        public void SniperMakesAHigherBidButLoses()
+        {
+            using (AuctionSniperDriver application = new AuctionSniperDriver())
+            using (var auction = new FakeAuctionServer(auctionId))
+            {
+                auction.StartSellingItem();
+                application.StartBiddingIn(auctionId);
+
+                auction.HasReceivedJoinRequestFrom(AuctionSniperDriver.SNIPER_ID);
+                auction.ReportPrice(1000, 98, "other bidder");
+                
+                application.HasShownSniperIsBidding();
+                auction.HasReceivedBid(1098, AuctionSniperDriver.SNIPER_ID);
+
                 auction.AnnounceClosed();
                 application.ShowsSniperHasLostAuction();
             }

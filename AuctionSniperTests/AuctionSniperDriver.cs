@@ -22,6 +22,8 @@ namespace AuctionSniperTests
     {
         public const string STATUS_JOINING = "Joining";
         public const string STATUS_LOST = "Lost";
+        public const string STATUS_BIDDING = "Bidding";
+        public const string SNIPER_ID = "sniper@jgroszko-server";
 
         Application _app;
         WorkSession _workSession;
@@ -76,6 +78,11 @@ namespace AuctionSniperTests
         internal void ShowsSniperHasLostAuction()
         {
             Window.ShowsSniperStatus(STATUS_LOST);
+        }
+
+        internal void HasShownSniperIsBidding()
+        {
+            Window.ShowsSniperStatus(STATUS_BIDDING);
         }
     }
 }

@@ -37,17 +37,18 @@ namespace AuctionSniperTests
             }
         }
 
-        public bool ReceivesAMessage()
+        public Message ReceivesAMessage()
         {
             Message result;
             if(_msg.TryDequeue(out result))
             {
-                return true;
+                return result;
             }
             else
             {
                 _event.WaitOne(TimeSpan.FromSeconds(10));
-                return _msg.TryDequeue(out result);
+                _msg.TryDequeue(out result);
+                return result;
             }
         }
     }

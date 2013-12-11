@@ -1,4 +1,5 @@
-﻿using bedrock;
+﻿using AuctionSniper.Common;
+using bedrock;
 using jabber;
 using jabber.client;
 using jabber.protocol;
@@ -31,6 +32,7 @@ namespace AuctionSniperTests
 
         private JabberClient _jc;
         private SingleMessageListener _listener;
+        private string _currentChat;
 
         public FakeAuctionServer(string itemId)
         {
@@ -45,6 +47,10 @@ namespace AuctionSniperTests
             _jc.OnError += new bedrock.ExceptionHandler((sender, ex) =>
             {
                 Debug.WriteLine(ex.ToString());
+            });
+            _jc.OnMessage += new MessageHandler((sender, message) =>
+            {
+                _currentChat = message.From;
             });
         }
 
@@ -72,14 +78,31 @@ namespace AuctionSniperTests
             _jc.Dispose();
         }
 
-        public void HasReceivedJoinRequestFromSniper()
+        public void HasReceivedJoinRequestFrom(string sniperId)
         {
-            Assert.IsTrue(_listener.ReceivesAMessage());
+            Message msg = _listener.ReceivesAMessage();
+            Assert.AreEqual(sniperId, msg.From.Bare);
+            Assert.AreEqual(SOLProtocol.JOIN_COMMAND_FORMAT, msg.Body);
         }
 
         internal void AnnounceClosed()
         {
-            _jc.Message("sniper@jgroszko-server", "Closed");
+            _jc.Message(_currentChat, SOLProtocol.CLOSE_EVENT_FORMAT);
+        }
+
+        internal void ReportPrice(int price, int increment, string bidder)
+        {
+            _jc.Message(_currentChat,
+                string.Format(
+                    SOLProtocol.PRICE_EVENT_FORMAT,
+                    price, increment, bidder));
+        }
+
+        internal void HasReceivedBid(int bid, string sniperId)
+        {
+            Message msg = _listener.ReceivesAMessage();
+            Assert.AreEqual(sniperId, msg.From.Bare);
+            Assert.AreEqual(SOLProtocol.BID_COMMAND_FORMAT, bid);
         }
     }
 }
