@@ -1,0 +1,9 @@
+[oO]bj/
+[bB]in/
+[dD]eploy/
+[dD]ebug/
+*.sdf
+*.opensdf
+*.suo
+*.user
+*.old
