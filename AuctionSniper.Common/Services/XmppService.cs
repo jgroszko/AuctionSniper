@@ -19,6 +19,7 @@ namespace AuctionSniper.Common.Services
         public const string XMPP_RESOURCE = "Auction Sniper";
 
         JabberClient _jc;
+        string _currentChat;
 
         public IMessageListener _listener;
 
@@ -59,6 +60,11 @@ namespace AuctionSniper.Common.Services
             _jc.Close();
         }
 
+        public void Message(string body)
+        {
+            Message(_currentChat, body);
+        }
+
         public void Message(string to, string body)
         {
             _jc.Message(to, body);
@@ -68,6 +74,9 @@ namespace AuctionSniper.Common.Services
         {
             if (!string.IsNullOrEmpty(message.Body))
             {
+                if (message.From != null)
+                    _currentChat = message.From.Bare;
+
                 _listener.ProcessMessage(message);
             }
         }

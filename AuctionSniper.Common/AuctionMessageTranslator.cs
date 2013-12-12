@@ -28,9 +28,8 @@ namespace AuctionSniper.Common
                     _listener.AuctionClosed();
                     break;
                 case "PRICE":
-                    _listener.Price(int.Parse(pairs["CurrentPrice"]),
-                                    int.Parse(pairs["Increment"]),
-                                    pairs["Bidder"]);
+                    _listener.CurrentPrice(int.Parse(pairs["CurrentPrice"]),
+                                    int.Parse(pairs["Increment"]));
                     break;
                 default:
                     throw new Exception("Invalid message");

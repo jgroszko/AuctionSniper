@@ -9,6 +9,6 @@ namespace AuctionSniper.Common.Interfaces
     public interface IAuctionMessageListener
     {
         void AuctionClosed();
-        void Price(int bid, int increment, string bidder);
+        void CurrentPrice(int price, int increment);
     }
 }

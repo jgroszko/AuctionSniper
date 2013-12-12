@@ -9,5 +9,6 @@ namespace AuctionSniper.Common.Interfaces
     public interface ISniperListener
     {
         void SniperLost();
+        void SniperBidding();
     }
 }

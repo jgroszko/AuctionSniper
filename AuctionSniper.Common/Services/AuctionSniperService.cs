@@ -10,9 +10,11 @@ namespace AuctionSniper.Common.Services
     public class AuctionSniperService : IAuctionMessageListener
     {
         private ISniperListener _listener;
+        private Auction _auction;
 
-        public AuctionSniperService(ISniperListener listener)
+        public AuctionSniperService(Auction auction, ISniperListener listener)
         {
+            _auction = auction;
             _listener = listener;
         }
 
@@ -21,8 +23,10 @@ namespace AuctionSniper.Common.Services
             _listener.SniperLost();
         }
 
-        public void Price(int bid, int increment, string bidder)
+        public void CurrentPrice(int price, int increment)
         {
+            _auction.Bid(price + increment);
+            _listener.SniperBidding();
         }
     }
 }

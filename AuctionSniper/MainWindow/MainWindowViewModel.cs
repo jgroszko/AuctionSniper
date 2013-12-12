@@ -22,6 +22,7 @@ namespace AuctionSniper.MainWindow
         public const string CONFIG_HOST = "host";
 
         private XmppService _xmpp;
+        private Auction _auction;
         
         private int _auctionId;
         public int AuctionId
@@ -75,12 +76,16 @@ namespace AuctionSniper.MainWindow
 
             AuctionId = int.Parse(Environment.GetCommandLineArgs()[1]);
 
+            _auction = new Auction();
+
              _xmpp = new XmppService(ConfigurationManager.AppSettings[CONFIG_JID],
                                      ConfigurationManager.AppSettings[CONFIG_PASSWORD],
                                      ConfigurationManager.AppSettings[CONFIG_HOST],
                                      new AuctionMessageTranslator(
-                                        new AuctionSniperService(
+                                        new AuctionSniperService(_auction,
                                              this)));
+
+             _auction.XmppService = _xmpp;
 
             _xmpp.Connect();
 
@@ -94,9 +99,9 @@ namespace AuctionSniper.MainWindow
             Status = "Lost";
         }
 
-        public void Price(int bid, int increment, string bidder)
+        public void SniperBidding()
         {
-            throw new NotImplementedException();
+            Status = "Bidding";
         }
     }
 }

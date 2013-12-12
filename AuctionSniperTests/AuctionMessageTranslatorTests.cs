@@ -42,7 +42,7 @@ namespace AuctionSniperTests
                     0, 0, "other bidder")
             });
 
-            mock.Verify(f => f.Price(0, 0, "other bidder"), Times.Once());
+            mock.Verify(f => f.CurrentPrice(0, 0), Times.Once());
         }
     }
 }

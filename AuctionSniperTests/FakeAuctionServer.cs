@@ -79,7 +79,7 @@ namespace AuctionSniperTests
         {
             Message msg = _listener.ReceivesAMessage();
             Assert.AreEqual(sniperId, msg.From.Bare);
-            Assert.AreEqual(SOLProtocol.BID_COMMAND_FORMAT, bid);
+            Assert.AreEqual(string.Format(SOLProtocol.BID_COMMAND_FORMAT, bid), msg.Body);
         }
     }
 }
