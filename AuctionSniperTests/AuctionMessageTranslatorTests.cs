@@ -31,5 +31,24 @@ namespace AuctionSniperTests
 
             Assert.IsTrue(mre.WaitOne(TimeSpan.FromSeconds(10)));
         }
+
+        [TestMethod]
+        public void NotifiesBidDetailsWhenCurrentPriceMessageReceived()
+        {
+            AuctionMessageTranslator amt = new AuctionMessageTranslator();
+            ManualResetEvent mre = new ManualResetEvent(false);
+            amt.OnAuctionPrice += new AuctionPriceEventHandler((sender, args) =>
+            {
+                mre.Set();
+            });
+
+            amt.ProcessMessage(null, new Message(new XmlDocument())
+                {
+                    Body = string.Format(SOLProtocol.PRICE_EVENT_FORMAT, 
+                                            0, 0, string.Empty)
+                });
+
+            Assert.IsTrue(mre.WaitOne(TimeSpan.FromSeconds(10)));
+        }
     }
 }

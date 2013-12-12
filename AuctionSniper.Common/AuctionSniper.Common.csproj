@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuctionMessageTranslator.cs" />
+    <Compile Include="AuctionPriceEventArgs.cs" />
     <Compile Include="IMessageListener.cs" />
     <Compile Include="SOLProtocol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
