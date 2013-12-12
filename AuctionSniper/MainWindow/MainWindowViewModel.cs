@@ -76,20 +76,25 @@ namespace AuctionSniper.MainWindow
 
             AuctionId = int.Parse(Environment.GetCommandLineArgs()[1]);
 
-            _auction = new Auction();
+            JoinAuction();
+        }
 
-             _xmpp = new XmppService(ConfigurationManager.AppSettings[CONFIG_JID],
-                                     ConfigurationManager.AppSettings[CONFIG_PASSWORD],
-                                     ConfigurationManager.AppSettings[CONFIG_HOST],
-                                     new AuctionMessageTranslator(
-                                        new AuctionSniperService(_auction,
-                                             this)));
+        public void JoinAuction()
+        {
+            _auction = new Auction(AuctionUser);
 
-             _auction.XmppService = _xmpp;
+            _xmpp = new XmppService(ConfigurationManager.AppSettings[CONFIG_JID],
+                                    ConfigurationManager.AppSettings[CONFIG_PASSWORD],
+                                    ConfigurationManager.AppSettings[CONFIG_HOST],
+                                    new AuctionMessageTranslator(
+                                       new AuctionSniperService(_auction,
+                                            this)));
+
+            _auction.XmppService = _xmpp;
 
             _xmpp.Connect();
 
-            _xmpp.Message(AuctionUser, SOLProtocol.JOIN_COMMAND_FORMAT);
+            _auction.Join();
 
             Status = "Joining";
         }

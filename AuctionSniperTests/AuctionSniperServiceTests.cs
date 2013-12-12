@@ -22,7 +22,7 @@ namespace AuctionSniperTests
         public void Initialize()
         {
             sniperListener = new Mock<ISniperListener>();
-            auction = new Mock<Auction>();
+            auction = new Mock<Auction>(string.Empty);
             sniper = new AuctionSniperService(auction.Object, sniperListener.Object);
         }
 

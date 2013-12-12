@@ -8,11 +8,23 @@ namespace AuctionSniper.Common
 {
     public class Auction
     {
-        public virtual void Bid(int price)
-        {
-            XmppService.Message(string.Format(SOLProtocol.BID_COMMAND_FORMAT, price));
-        }
+        private string _auctionUser;
 
         public Services.XmppService XmppService { get; set; }
+
+        public Auction(string auctionUser)
+        {
+            _auctionUser = auctionUser;
+        }
+
+        public virtual void Bid(int price)
+        {
+            XmppService.Message(_auctionUser, string.Format(SOLProtocol.BID_COMMAND_FORMAT, price));
+        }
+
+        public virtual void Join()
+        {
+            XmppService.Message(_auctionUser, string.Format(SOLProtocol.JOIN_COMMAND_FORMAT));
+        }
     }
 }

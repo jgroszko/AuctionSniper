@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auction.cs" />
+    <Compile Include="AuctionEvent.cs" />
     <Compile Include="AuctionMessageTranslator.cs" />
     <Compile Include="AuctionPriceEventArgs.cs" />
     <Compile Include="Interfaces\IAuctionMessageListener.cs" />

@@ -18,18 +18,15 @@ namespace AuctionSniper.Common
 
         public void ProcessMessage(jabber.protocol.client.Message message)
         {
-            var data = message.Body.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-            var pairs = data.ToDictionary(d => d.Substring(0, d.IndexOf(":")).Trim(),
-                d => d.Substring(d.IndexOf(":")+1).Trim());
+            AuctionEvent ev = AuctionEvent.From(message.Body);
             
-            switch(pairs["Event"])
+            switch(ev.Type)
             {
                 case "CLOSE":
                     _listener.AuctionClosed();
                     break;
                 case "PRICE":
-                    _listener.CurrentPrice(int.Parse(pairs["CurrentPrice"]),
-                                    int.Parse(pairs["Increment"]));
+                    _listener.CurrentPrice(ev.CurrentPrice, ev.Increment);
                     break;
                 default:
                     throw new Exception("Invalid message");
