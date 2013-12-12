@@ -46,6 +46,8 @@
     <Compile Include="AuctionPriceEventArgs.cs" />
     <Compile Include="Interfaces\IAuctionMessageListener.cs" />
     <Compile Include="Interfaces\IMessageListener.cs" />
+    <Compile Include="Interfaces\ISniperListener.cs" />
+    <Compile Include="Services\AuctionSniperService.cs" />
     <Compile Include="Services\XmppService.cs" />
     <Compile Include="SOLProtocol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

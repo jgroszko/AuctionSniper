@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace AuctionSniper.MainWindow
 {
-    class MainWindowViewModel : BaseViewModel, IAuctionMessageListener
+    class MainWindowViewModel : BaseViewModel, ISniperListener
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(MainWindowViewModel));
 
@@ -78,7 +78,9 @@ namespace AuctionSniper.MainWindow
              _xmpp = new XmppService(ConfigurationManager.AppSettings[CONFIG_JID],
                                      ConfigurationManager.AppSettings[CONFIG_PASSWORD],
                                      ConfigurationManager.AppSettings[CONFIG_HOST],
-                                     new AuctionMessageTranslator(this));
+                                     new AuctionMessageTranslator(
+                                        new AuctionSniperService(
+                                             this)));
 
             _xmpp.Connect();
 
@@ -87,7 +89,7 @@ namespace AuctionSniper.MainWindow
             Status = "Joining";
         }
 
-        public void AuctionClosed()
+        public void SniperLost()
         {
             Status = "Lost";
         }
