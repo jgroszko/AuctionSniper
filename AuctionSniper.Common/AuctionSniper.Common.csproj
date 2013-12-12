@@ -45,7 +45,6 @@
     <Compile Include="Auction.cs" />
     <Compile Include="AuctionEvent.cs" />
     <Compile Include="AuctionMessageTranslator.cs" />
-    <Compile Include="AuctionPriceEventArgs.cs" />
     <Compile Include="Interfaces\IAuctionMessageListener.cs" />
     <Compile Include="Interfaces\IMessageListener.cs" />
     <Compile Include="Interfaces\ISniperListener.cs" />
