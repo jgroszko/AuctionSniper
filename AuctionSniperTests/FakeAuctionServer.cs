@@ -1,4 +1,5 @@
 ﻿using AuctionSniper.Common;
+using AuctionSniper.Common.Services;
 using bedrock;
 using jabber;
 using jabber.client;
@@ -30,52 +31,28 @@ namespace AuctionSniperTests
             }
         }
 
-        private JabberClient _jc;
-        private SingleMessageListener _listener;
-        private string _currentChat;
+        private XmppService _xmpp;
+        private SingleMessageListener _listener = new SingleMessageListener();
 
         public FakeAuctionServer(string itemId)
         {
             _itemId = itemId;
-            _jc = new JabberClient();
-            _jc.NetworkHost = XMPP_HOSTNAME;
 
-            _jc.OnAuthError += new ProtocolHandler((sender, ex) =>
-            {
-                Debug.WriteLine(ex.ToString());
-            });
-            _jc.OnError += new bedrock.ExceptionHandler((sender, ex) =>
-            {
-                Debug.WriteLine(ex.ToString());
-            });
-            _jc.OnMessage += new MessageHandler((sender, message) =>
-            {
-                _currentChat = message.From;
-            });
+            _xmpp = new XmppService(
+                string.Format(ITEM_ID_AS_LOGIN, ItemId),
+                AUCTION_PASSWORD,
+                XMPP_HOSTNAME,
+                _listener);
         }
 
         public void StartSellingItem()
         {
-            JID j = new JID(string.Format(ITEM_ID_AS_LOGIN, ItemId));
-            _jc.User = j.User;
-            _jc.Server = j.Server;
-            _jc.Password = AUCTION_PASSWORD;
-
-            ManualResetEvent mse = new ManualResetEvent(false);
-            _jc.OnAuthenticate += new bedrock.ObjectHandler(sender =>
-            {
-                mse.Set();
-
-                _listener = new SingleMessageListener(_jc);
-            });
-
-            _jc.Connect();
-            Assert.IsTrue(mse.WaitOne(TimeSpan.FromSeconds(10)));
+            _xmpp.Connect();
         }
 
         public void Dispose()
         {
-            _jc.Dispose();
+            _xmpp.Dispose();
         }
 
         public void HasReceivedJoinRequestFrom(string sniperId)
@@ -85,20 +62,20 @@ namespace AuctionSniperTests
             Assert.AreEqual(SOLProtocol.JOIN_COMMAND_FORMAT, msg.Body);
         }
 
-        internal void AnnounceClosed()
+        public void AnnounceClosed()
         {
-            _jc.Message(_currentChat, SOLProtocol.CLOSE_EVENT_FORMAT);
+            _xmpp.Message(_listener.CurrentChat, SOLProtocol.CLOSE_EVENT_FORMAT);
         }
 
-        internal void ReportPrice(int price, int increment, string bidder)
+        public void ReportPrice(int price, int increment, string bidder)
         {
-            _jc.Message(_currentChat,
+            _xmpp.Message(_listener.CurrentChat,
                 string.Format(
                     SOLProtocol.PRICE_EVENT_FORMAT,
                     price, increment, bidder));
         }
 
-        internal void HasReceivedBid(int bid, string sniperId)
+        public void HasReceivedBid(int bid, string sniperId)
         {
             Message msg = _listener.ReceivesAMessage();
             Assert.AreEqual(sniperId, msg.From.Bare);

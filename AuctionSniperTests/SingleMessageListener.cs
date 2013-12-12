@@ -1,4 +1,5 @@
 ﻿using AuctionSniper.Common;
+using AuctionSniper.Common.Interfaces;
 using jabber.client;
 using jabber.protocol.client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,29 +15,10 @@ namespace AuctionSniperTests
 {
     public class SingleMessageListener : IMessageListener
     {
-        JabberClient _jc;
-
-        MessageHandler _handler;
-
         AutoResetEvent _event = new AutoResetEvent(false);
         ConcurrentQueue<Message> _msg = new ConcurrentQueue<Message>();
 
-        public SingleMessageListener(JabberClient jc)
-        {
-            _jc = jc;
-
-            _handler = new MessageHandler(ProcessMessage);
-            _jc.OnMessage += _handler;
-        }
-
-        public void ProcessMessage(object sender, Message msg)
-        {
-            if (!string.IsNullOrEmpty(msg.Body))
-            {
-                _msg.Enqueue(msg);
-                _event.Set();
-            }
-        }
+        public string CurrentChat { get; set; }
 
         public Message ReceivesAMessage()
         {
@@ -50,6 +32,20 @@ namespace AuctionSniperTests
                 _event.WaitOne(TimeSpan.FromSeconds(10));
                 _msg.TryDequeue(out result);
                 return result;
+            }
+        }
+
+        public void ProcessMessage(Message message)
+        {
+            if (!string.IsNullOrEmpty(message.Body))
+            {
+                if (message.From != null)
+                {
+                    CurrentChat = message.From.Bare;
+                }
+
+                _msg.Enqueue(message);
+                _event.Set();
             }
         }
     }

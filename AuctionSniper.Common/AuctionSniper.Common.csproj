@@ -44,10 +44,13 @@
   <ItemGroup>
     <Compile Include="AuctionMessageTranslator.cs" />
     <Compile Include="AuctionPriceEventArgs.cs" />
-    <Compile Include="IMessageListener.cs" />
+    <Compile Include="Interfaces\IAuctionMessageListener.cs" />
+    <Compile Include="Interfaces\IMessageListener.cs" />
+    <Compile Include="Services\XmppService.cs" />
     <Compile Include="SOLProtocol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

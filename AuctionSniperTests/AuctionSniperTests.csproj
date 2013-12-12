@@ -38,6 +38,9 @@
     <Reference Include="jabber-net">
       <HintPath>..\External Dependencies\jabber-net\jabber-net.dll</HintPath>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.1.1311.0615\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
     <Reference Include="TestStack.White">
@@ -75,6 +78,9 @@
       <Project>{654425b3-3674-4076-8b14-f8e2558ad59f}</Project>
       <Name>AuctionSniper.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

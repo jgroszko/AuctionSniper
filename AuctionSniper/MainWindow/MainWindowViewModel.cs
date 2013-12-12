@@ -1,8 +1,10 @@
 ﻿using AuctionSniper.Common;
-using AuctionSniper.Services;
+using AuctionSniper.Common.Interfaces;
+using AuctionSniper.Common.Services;
 using jabber.protocol.client;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -11,12 +13,16 @@ using System.Windows;
 
 namespace AuctionSniper.MainWindow
 {
-    class MainWindowViewModel : BaseViewModel
+    class MainWindowViewModel : BaseViewModel, IAuctionMessageListener
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(MainWindowViewModel));
 
-        private AuctionMessageTranslator _auctionMessageTranslator = new AuctionMessageTranslator();
+        public const string CONFIG_JID = "jid";
+        public const string CONFIG_PASSWORD = "password";
+        public const string CONFIG_HOST = "host";
 
+        private XmppService _xmpp;
+        
         private int _auctionId;
         public int AuctionId
         {
@@ -69,24 +75,26 @@ namespace AuctionSniper.MainWindow
 
             AuctionId = int.Parse(Environment.GetCommandLineArgs()[1]);
 
-            XmppService.Instance.OnAuthenticated += Authenticated;
-            XmppService.Instance.OnMessage += _auctionMessageTranslator.ProcessMessage;
+             _xmpp = new XmppService(ConfigurationManager.AppSettings[CONFIG_JID],
+                                     ConfigurationManager.AppSettings[CONFIG_PASSWORD],
+                                     ConfigurationManager.AppSettings[CONFIG_HOST],
+                                     new AuctionMessageTranslator(this));
 
-            _auctionMessageTranslator.OnAuctionClose += AuctionClosed;
+            _xmpp.Connect();
 
-            XmppService.Instance.Connect();
-        }
-
-        private void Authenticated(object sender, EventArgs e)
-        {
-            XmppService.Instance.Message(AuctionUser, SOLProtocol.JOIN_COMMAND_FORMAT);
+            _xmpp.Message(AuctionUser, SOLProtocol.JOIN_COMMAND_FORMAT);
 
             Status = "Joining";
         }
 
-        private void AuctionClosed(object sender, EventArgs e)
+        public void AuctionClosed()
         {
             Status = "Lost";
+        }
+
+        public void Price(int bid, int increment, string bidder)
+        {
+            throw new NotImplementedException();
         }
     }
 }

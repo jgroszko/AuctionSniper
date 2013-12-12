@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AuctionSniper.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +9,14 @@ namespace AuctionSniper.Common
 {
     public class AuctionMessageTranslator : IMessageListener
     {
-        public event EventHandler OnAuctionClose;
-        public event AuctionPriceEventHandler OnAuctionPrice;
+        private IAuctionMessageListener _listener;
 
-        public void ProcessMessage(object sender, jabber.protocol.client.Message message)
+        public AuctionMessageTranslator(IAuctionMessageListener listener)
+        {
+            _listener = listener;
+        }
+
+        public void ProcessMessage(jabber.protocol.client.Message message)
         {
             var data = message.Body.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
             var pairs = data.ToDictionary(d => d.Substring(0, d.IndexOf(":")).Trim(),
@@ -20,21 +25,12 @@ namespace AuctionSniper.Common
             switch(pairs["Event"])
             {
                 case "CLOSE":
-                    if(OnAuctionClose != null)
-                    {
-                        OnAuctionClose(this, EventArgs.Empty);
-                    }
+                    _listener.AuctionClosed();
                     break;
                 case "PRICE":
-                    if(OnAuctionPrice != null)
-                    {
-                        OnAuctionPrice(this, new AuctionPriceEventArgs()
-                            {
-                                CurrentPrice = int.Parse(pairs["CurrentPrice"]),
-                                Increment = int.Parse(pairs["Increment"]),
-                                Bidder = pairs["Bidder"]
-                            });
-                    }
+                    _listener.Price(int.Parse(pairs["CurrentPrice"]),
+                                    int.Parse(pairs["Increment"]),
+                                    pairs["Bidder"]);
                     break;
                 default:
                     throw new Exception("Invalid message");

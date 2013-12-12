@@ -1,5 +1,4 @@
-﻿using AuctionSniper.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -21,15 +20,6 @@ namespace AuctionSniper
             log4net.Config.XmlConfigurator.Configure();
 
             log.Info("Starting application");
-        }
-
-        protected override void OnExit(ExitEventArgs e)
-        {
-            log.Info("Closing");
-
-            XmppService.Instance.Close();
-
-            base.OnExit(e);
         }
     }
 }

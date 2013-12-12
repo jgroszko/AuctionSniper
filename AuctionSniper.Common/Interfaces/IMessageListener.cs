@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AuctionSniper.Common
+namespace AuctionSniper.Common.Interfaces
 {
     public interface IMessageListener
     {
-        void ProcessMessage(object sender, Message message);
+        void ProcessMessage(Message message);
     }
 }

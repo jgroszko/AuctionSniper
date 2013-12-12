@@ -1,6 +1,8 @@
 ﻿using AuctionSniper.Common;
+using AuctionSniper.Common.Interfaces;
 using jabber.protocol.client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,38 +19,30 @@ namespace AuctionSniperTests
         [TestMethod]
         public void NotifiesAuctionClosedWhenCloseMessageReceived()
         {
-            AuctionMessageTranslator amt = new AuctionMessageTranslator();
-            ManualResetEvent mre = new ManualResetEvent(false);
-            amt.OnAuctionClose += new EventHandler((sender, args) =>
-                {
-                    mre.Set();
-                });
-
-            amt.ProcessMessage(null, new Message(new XmlDocument())
+            Mock<IAuctionMessageListener> mock = new Mock<IAuctionMessageListener>();
+            AuctionMessageTranslator amt = new AuctionMessageTranslator(mock.Object);
+            
+            amt.ProcessMessage(new Message(new XmlDocument())
             {
                 Body = SOLProtocol.CLOSE_EVENT_FORMAT
             });
 
-            Assert.IsTrue(mre.WaitOne(TimeSpan.FromSeconds(10)));
+            mock.Verify(f => f.AuctionClosed(), Times.Once());
         }
 
         [TestMethod]
         public void NotifiesBidDetailsWhenCurrentPriceMessageReceived()
         {
-            AuctionMessageTranslator amt = new AuctionMessageTranslator();
-            ManualResetEvent mre = new ManualResetEvent(false);
-            amt.OnAuctionPrice += new AuctionPriceEventHandler((sender, args) =>
+            Mock<IAuctionMessageListener> mock = new Mock<IAuctionMessageListener>();
+            AuctionMessageTranslator amt = new AuctionMessageTranslator(mock.Object);
+
+            amt.ProcessMessage(new Message(new XmlDocument())
             {
-                mre.Set();
+                Body = string.Format(SOLProtocol.PRICE_EVENT_FORMAT,
+                    0, 0, "other bidder")
             });
 
-            amt.ProcessMessage(null, new Message(new XmlDocument())
-                {
-                    Body = string.Format(SOLProtocol.PRICE_EVENT_FORMAT, 
-                                            0, 0, string.Empty)
-                });
-
-            Assert.IsTrue(mre.WaitOne(TimeSpan.FromSeconds(10)));
+            mock.Verify(f => f.Price(0, 0, "other bidder"), Times.Once());
         }
     }
 }
