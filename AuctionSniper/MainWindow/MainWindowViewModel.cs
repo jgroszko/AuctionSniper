@@ -83,11 +83,14 @@ namespace AuctionSniper.MainWindow
         {
             _auction = new Auction(AuctionUser);
 
-            _xmpp = new XmppService(ConfigurationManager.AppSettings[CONFIG_JID],
+            string jid = ConfigurationManager.AppSettings[CONFIG_JID];
+
+            _xmpp = new XmppService(jid,
                                     ConfigurationManager.AppSettings[CONFIG_PASSWORD],
                                     ConfigurationManager.AppSettings[CONFIG_HOST],
                                     new AuctionMessageTranslator(
-                                       new AuctionSniperService(_auction,
+                                        jid,
+                                        new AuctionSniperService(_auction,
                                             this)));
 
             _auction.XmppService = _xmpp;
@@ -107,6 +110,16 @@ namespace AuctionSniper.MainWindow
         public void SniperBidding()
         {
             Status = "Bidding";
+        }
+
+        public void SniperWinning()
+        {
+            Status = "Winning";
+        }
+
+        public void SniperWon()
+        {
+            Status = "Won";
         }
     }
 }

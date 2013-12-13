@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AuctionSniper.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,6 +45,19 @@ namespace AuctionSniper.Common
             {
                 return int.Parse(Fields["Increment"]);
             }
+        }
+
+        public string Bidder
+        {
+            get
+            {
+                return Fields["Bidder"];
+            }
+        }
+
+        public PriceSource IsFrom(string _sniperId)
+        {
+            return _sniperId.Equals(Bidder) ? PriceSource.FromSniper : PriceSource.FromOtherBidder;
         }
     }
 }

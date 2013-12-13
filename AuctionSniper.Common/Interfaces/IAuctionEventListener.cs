@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace AuctionSniper.Common.Interfaces
 {
-    public interface IAuctionMessageListener
+    public enum PriceSource
+    {
+        FromSniper,
+        FromOtherBidder
+    }
+
+    public interface IAuctionEventListener
     {
         void AuctionClosed();
-        void CurrentPrice(int price, int increment);
+        void CurrentPrice(int price, int increment, PriceSource source);
     }
 }

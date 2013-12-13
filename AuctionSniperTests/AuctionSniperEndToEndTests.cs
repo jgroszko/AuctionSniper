@@ -14,6 +14,23 @@ namespace AuctionSniperTests
     {
         static string auctionId = "54321";
 
+        AuctionSniperDriver application;
+        FakeAuctionServer auction;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            application = new AuctionSniperDriver();
+            auction = new FakeAuctionServer(auctionId);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            auction.Dispose();
+            application.Dispose();
+        }
+
         [TestMethod]
         public void SniperJoinsAuctionUntilAuctionCloses()
         {
@@ -36,16 +53,41 @@ namespace AuctionSniperTests
             using (var auction = new FakeAuctionServer(auctionId))
             {
                 auction.StartSellingItem();
+
                 application.StartBiddingIn(auctionId);
-
                 auction.HasReceivedJoinRequestFrom(AuctionSniperDriver.SNIPER_ID);
-                auction.ReportPrice(1000, 98, "other bidder");
-                
-                application.HasShownSniperIsBidding();
-                auction.HasReceivedBid(1098, AuctionSniperDriver.SNIPER_ID);
 
+                auction.ReportPrice(1000, 98, "other bidder");
+                application.HasShownSniperIsBidding();
+
+                auction.HasReceivedBid(1098, AuctionSniperDriver.SNIPER_ID);
+                
                 auction.AnnounceClosed();
                 application.ShowsSniperHasLostAuction();
+            }
+        }
+
+        [TestMethod]
+        public void SniperWinsAnAuctionByBiddingHigher()
+        {
+            using (AuctionSniperDriver application = new AuctionSniperDriver())
+            using (var auction = new FakeAuctionServer(auctionId))
+            {
+                auction.StartSellingItem();
+
+                application.StartBiddingIn(auctionId);
+                auction.HasReceivedJoinRequestFrom(AuctionSniperDriver.SNIPER_ID);
+
+                auction.ReportPrice(1000, 98, "other bidder");
+                application.HasShownSniperIsBidding();
+
+                auction.HasReceivedBid(1098, AuctionSniperDriver.SNIPER_ID);
+
+                auction.ReportPrice(1098, 97, AuctionSniperDriver.SNIPER_ID);
+                application.HasShowSniperIsWinning();
+
+                auction.AnnounceClosed();
+                application.ShowsSniperHasWonAuction();
             }
         }
     }

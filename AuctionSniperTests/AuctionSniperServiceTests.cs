@@ -27,11 +27,51 @@ namespace AuctionSniperTests
         }
 
         [TestMethod]
-        public void ReportsLostWhenAuctionCloses()
+        public void ReportsLostIfAuctionClosesImmediately()
         {
+            sniperListener.Setup(f => f.SniperLost());
+
             sniper.AuctionClosed();
 
             sniperListener.Verify(f => f.SniperLost(), Times.AtLeastOnce());
+        }
+
+        [TestMethod]
+        public void ReportsLostIfAuctionClosesWhenBidding()
+        {
+            var sequence = new MockSequence();
+            sniperListener.InSequence(sequence).Setup(f => f.SniperBidding());
+            sniperListener.InSequence(sequence).Setup(f => f.SniperLost());
+
+            sniper.CurrentPrice(123, 45, PriceSource.FromOtherBidder);
+            sniper.AuctionClosed();
+
+            sniperListener.VerifyAll(); // TODO: Sequence doesn't actually work in Loose mode
+        }
+
+        [TestMethod]
+        public void ReportsWonIfAuctionClosesWhenWinning()
+        {
+            var sequence = new MockSequence();
+            sniperListener.InSequence(sequence).Setup(f => f.SniperWinning());
+            sniperListener.InSequence(sequence).Setup(f => f.SniperWon());
+
+            sniper.CurrentPrice(123, 45, PriceSource.FromSniper);
+            sniper.AuctionClosed();
+
+            sniperListener.Verify(f => f.SniperWinning(), Times.AtLeastOnce());
+            sniperListener.Verify(f => f.SniperWon(), Times.Once());
+        }
+
+        [TestMethod]
+        public void ReportsIsWinningWhenCurrentPriceComesFromSniper()
+        {
+            int price = 1001;
+            int increment = 25;
+
+            sniper.CurrentPrice(price, increment, PriceSource.FromSniper);
+
+            sniperListener.Verify(f => f.SniperWinning(), Times.AtLeastOnce());
         }
 
         [TestMethod]
@@ -40,7 +80,10 @@ namespace AuctionSniperTests
             int price = 1001;
             int increment = 25;
 
-            sniper.CurrentPrice(price, increment);
+            sniperListener.Setup(f => f.SniperBidding());
+            auction.Setup(f => f.Bid(price + increment));
+
+            sniper.CurrentPrice(price, increment, PriceSource.FromOtherBidder);
 
             sniperListener.Verify(f => f.SniperBidding(), Times.AtLeastOnce());
             auction.Verify(f => f.Bid(price + increment), Times.Once());

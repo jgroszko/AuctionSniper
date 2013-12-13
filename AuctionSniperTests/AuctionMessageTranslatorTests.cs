@@ -16,12 +16,21 @@ namespace AuctionSniperTests
     [TestClass]
     public class AuctionMessageTranslatorTests
     {
+        public const string SNIPER_ID = "sniper_id";
+
+        Mock<IAuctionEventListener> mock;
+        AuctionMessageTranslator amt;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            mock = new Mock<IAuctionEventListener>();
+            amt = new AuctionMessageTranslator(SNIPER_ID, mock.Object);
+        }
+
         [TestMethod]
         public void NotifiesAuctionClosedWhenCloseMessageReceived()
         {
-            Mock<IAuctionMessageListener> mock = new Mock<IAuctionMessageListener>();
-            AuctionMessageTranslator amt = new AuctionMessageTranslator(mock.Object);
-            
             amt.ProcessMessage(new Message(new XmlDocument())
             {
                 Body = SOLProtocol.CLOSE_EVENT_FORMAT
@@ -31,18 +40,27 @@ namespace AuctionSniperTests
         }
 
         [TestMethod]
-        public void NotifiesBidDetailsWhenCurrentPriceMessageReceived()
+        public void NotifiesBidDetailsWhenCurrentPriceMessageReceivedFromOtherBidder()
         {
-            Mock<IAuctionMessageListener> mock = new Mock<IAuctionMessageListener>();
-            AuctionMessageTranslator amt = new AuctionMessageTranslator(mock.Object);
-
             amt.ProcessMessage(new Message(new XmlDocument())
             {
                 Body = string.Format(SOLProtocol.PRICE_EVENT_FORMAT,
                     0, 0, "other bidder")
             });
 
-            mock.Verify(f => f.CurrentPrice(0, 0), Times.Once());
+            mock.Verify(f => f.CurrentPrice(0, 0, PriceSource.FromOtherBidder), Times.Once());
+        }
+
+        [TestMethod]
+        public void NotifiesBidDetailsWhenCurrentPriceMessageReceivedFromSniper()
+        {
+            amt.ProcessMessage(new Message(new XmlDocument())
+            {
+                Body = string.Format(SOLProtocol.PRICE_EVENT_FORMAT,
+                    0, 0, SNIPER_ID)
+            });
+
+            mock.Verify(f => f.CurrentPrice(0, 0, PriceSource.FromSniper), Times.Once());
         }
     }
 }

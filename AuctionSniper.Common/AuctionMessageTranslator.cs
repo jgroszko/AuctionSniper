@@ -9,10 +9,12 @@ namespace AuctionSniper.Common
 {
     public class AuctionMessageTranslator : IMessageListener
     {
-        private IAuctionMessageListener _listener;
+        private string _sniperId;
+        private IAuctionEventListener _listener;
 
-        public AuctionMessageTranslator(IAuctionMessageListener listener)
+        public AuctionMessageTranslator(string sniperId, IAuctionEventListener listener)
         {
+            _sniperId = sniperId;
             _listener = listener;
         }
 
@@ -26,7 +28,7 @@ namespace AuctionSniper.Common
                     _listener.AuctionClosed();
                     break;
                 case "PRICE":
-                    _listener.CurrentPrice(ev.CurrentPrice, ev.Increment);
+                    _listener.CurrentPrice(ev.CurrentPrice, ev.Increment, ev.IsFrom(_sniperId));
                     break;
                 default:
                     throw new Exception("Invalid message");

@@ -10,5 +10,7 @@ namespace AuctionSniper.Common.Interfaces
     {
         void SniperLost();
         void SniperBidding();
+        void SniperWinning();
+        void SniperWon();
     }
 }
