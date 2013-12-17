@@ -14,6 +14,8 @@ namespace AuctionSniperTests
     [TestClass]
     public class AuctionSniperServiceTests
     {
+        public const string ITEM_ID = "5432";
+
         Mock<ISniperListener> sniperListener;
         Mock<Auction> auction;
         AuctionSniperService sniper;
@@ -23,7 +25,7 @@ namespace AuctionSniperTests
         {
             sniperListener = new Mock<ISniperListener>();
             auction = new Mock<Auction>(string.Empty);
-            sniper = new AuctionSniperService(auction.Object, sniperListener.Object);
+            sniper = new AuctionSniperService(auction.Object, ITEM_ID, sniperListener.Object);
         }
 
         [TestMethod]
@@ -40,7 +42,7 @@ namespace AuctionSniperTests
         public void ReportsLostIfAuctionClosesWhenBidding()
         {
             var sequence = new MockSequence();
-            sniperListener.InSequence(sequence).Setup(f => f.SniperBidding());
+            sniperListener.InSequence(sequence).Setup(f => f.SniperBidding(It.IsAny<SniperState>()));
             sniperListener.InSequence(sequence).Setup(f => f.SniperLost());
 
             sniper.CurrentPrice(123, 45, PriceSource.FromOtherBidder);
@@ -79,13 +81,16 @@ namespace AuctionSniperTests
         {
             int price = 1001;
             int increment = 25;
+            int bid = price + increment;
+            SniperState state = new SniperState(ITEM_ID, price, bid);
 
-            sniperListener.Setup(f => f.SniperBidding());
-            auction.Setup(f => f.Bid(price + increment));
+            sniperListener.Setup(f => f.SniperBidding(It.Is<SniperState>(ss => ss.Equals(state))));
+            auction.Setup(f => f.Bid(bid));
 
             sniper.CurrentPrice(price, increment, PriceSource.FromOtherBidder);
 
-            sniperListener.Verify(f => f.SniperBidding(), Times.AtLeastOnce());
+            sniperListener.Verify(f => f.SniperBidding(It.Is<SniperState>(ss => ss.Equals(state))),
+                Times.AtLeastOnce());
             auction.Verify(f => f.Bid(price + increment), Times.Once());
         }
     }

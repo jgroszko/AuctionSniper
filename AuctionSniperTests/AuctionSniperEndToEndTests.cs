@@ -58,7 +58,7 @@ namespace AuctionSniperTests
                 auction.HasReceivedJoinRequestFrom(AuctionSniperDriver.SNIPER_ID);
 
                 auction.ReportPrice(1000, 98, "other bidder");
-                application.HasShownSniperIsBidding();
+                application.HasShownSniperIsBidding(1000, 1098);
 
                 auction.HasReceivedBid(1098, AuctionSniperDriver.SNIPER_ID);
                 
@@ -79,15 +79,15 @@ namespace AuctionSniperTests
                 auction.HasReceivedJoinRequestFrom(AuctionSniperDriver.SNIPER_ID);
 
                 auction.ReportPrice(1000, 98, "other bidder");
-                application.HasShownSniperIsBidding();
+                application.HasShownSniperIsBidding(1000, 1098);
 
                 auction.HasReceivedBid(1098, AuctionSniperDriver.SNIPER_ID);
 
                 auction.ReportPrice(1098, 97, AuctionSniperDriver.SNIPER_ID);
-                application.HasShowSniperIsWinning();
+                application.HasShownSniperIsWinning(1098);
 
                 auction.AnnounceClosed();
-                application.ShowsSniperHasWonAuction();
+                application.ShowsSniperHasWonAuction(1098);
             }
         }
     }

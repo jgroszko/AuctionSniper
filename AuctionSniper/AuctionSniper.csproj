@@ -76,9 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainWindow\MainWindowViewModel.cs" />
-    <Compile Include="MainWindow\SnipersDataSet.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

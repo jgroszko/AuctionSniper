@@ -20,16 +20,13 @@ namespace AuctionSniperTests
 {
     public class AuctionSniperDriver : IDisposable
     {
-        public const string STATUS_JOINING = "Joining";
-        public const string STATUS_LOST = "Lost";
-        public const string STATUS_BIDDING = "Bidding";
-        public const string STATUS_WINNING = "Winning";
-        public const string STATUS_WON = "Won";
         public const string SNIPER_ID = "sniper@jgroszko-server";
 
         Application _app;
         WorkSession _workSession;
         ScreenRepository _screenRepository;
+
+        private string _auctionId;
 
         public MainWindow Window
         {
@@ -41,18 +38,20 @@ namespace AuctionSniperTests
 
         public void StartBiddingIn(string auctionId)
         {
-            LaunchApplication(auctionId);
+            _auctionId = auctionId;
 
-            Window.ShowsSniperStatus(STATUS_JOINING);
+            LaunchApplication();
+
+            Window.ShowsSniperStatus(_auctionId, AuctionSniper.Common.Constants.STATUS_JOINING);
         }
 
         #region Helpers
-        private void LaunchApplication(string auctionId)
+        private void LaunchApplication()
         {
             var directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var location = Path.Combine(directoryName, @"AuctionSniper.exe");
             _app = Application.Launch(new ProcessStartInfo(
-                location, auctionId));
+                location, _auctionId));
 
             var workConfiguration =
                 new WorkConfiguration
@@ -77,24 +76,24 @@ namespace AuctionSniperTests
         }
         #endregion
 
-        internal void ShowsSniperHasLostAuction()
+        public virtual void ShowsSniperHasLostAuction()
         {
-            Window.ShowsSniperStatus(STATUS_LOST);
+            Window.ShowsSniperStatus(_auctionId, AuctionSniper.Common.Constants.STATUS_LOST);
         }
 
-        internal void HasShownSniperIsBidding()
+        public virtual void ShowsSniperHasWonAuction(int lastPrice)
         {
-            Window.ShowsSniperStatus(STATUS_BIDDING);
+            Window.ShowsSniperStatus(_auctionId, lastPrice, lastPrice, AuctionSniper.Common.Constants.STATUS_WON);
         }
 
-        internal void HasShowSniperIsWinning()
+        public virtual void HasShownSniperIsBidding(int lastPrice, int lastBid)
         {
-            Window.ShowsSniperStatus(STATUS_WINNING);
+            Window.ShowsSniperStatus(_auctionId, lastPrice, lastBid, AuctionSniper.Common.Constants.STATUS_BIDDING);
         }
 
-        internal void ShowsSniperHasWonAuction()
+        public virtual void HasShownSniperIsWinning(int winningBid)
         {
-            Window.ShowsSniperStatus(STATUS_WON);
+            Window.ShowsSniperStatus(_auctionId, winningBid, winningBid, AuctionSniper.Common.Constants.STATUS_WINNING);
         }
     }
 }

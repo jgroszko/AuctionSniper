@@ -42,6 +42,7 @@
       <HintPath>..\packages\Moq.4.1.1311.0615\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.XML" />
     <Reference Include="TestStack.White">
       <HintPath>..\External Dependencies\TestStack.White\TestStack.White.dll</HintPath>
@@ -73,6 +74,7 @@
     <Compile Include="MainWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingleMessageListener.cs" />
+    <Compile Include="SnipersDataSetTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AuctionSniper.Common\AuctionSniper.Common.csproj">

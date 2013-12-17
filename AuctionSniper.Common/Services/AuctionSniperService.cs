@@ -11,12 +11,14 @@ namespace AuctionSniper.Common.Services
     {
         private ISniperListener _listener;
         private Auction _auction;
+        private string _itemId;
 
         private bool _isWinning = false;
 
-        public AuctionSniperService(Auction auction, ISniperListener listener)
+        public AuctionSniperService(Auction auction, string itemId, ISniperListener listener)
         {
             _auction = auction;
+            _itemId = itemId;
             _listener = listener;
         }
 
@@ -41,9 +43,9 @@ namespace AuctionSniper.Common.Services
             }
             else
             {
-                _auction.Bid(price + increment);
-                _listener.SniperBidding();
-                _listener.SniperBidding();
+                int bid = price + increment;
+                _auction.Bid(bid);
+                _listener.SniperBidding(new SniperState(_itemId, price, bid));
             }
         }
     }

@@ -45,11 +45,16 @@
     <Compile Include="Auction.cs" />
     <Compile Include="AuctionEvent.cs" />
     <Compile Include="AuctionMessageTranslator.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Interfaces\IAuctionEventListener.cs" />
     <Compile Include="Interfaces\IMessageListener.cs" />
     <Compile Include="Interfaces\ISniperListener.cs" />
     <Compile Include="Services\AuctionSniperService.cs" />
     <Compile Include="Services\XmppService.cs" />
+    <Compile Include="SnipersDataSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SniperState.cs" />
     <Compile Include="SOLProtocol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

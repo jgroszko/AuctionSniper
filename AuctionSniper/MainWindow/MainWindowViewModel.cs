@@ -24,8 +24,8 @@ namespace AuctionSniper.MainWindow
         private XmppService _xmpp;
         private Auction _auction;
         
-        private int _auctionId;
-        public int AuctionId
+        private string _auctionId;
+        public string AuctionId
         {
             get
             {
@@ -70,7 +70,7 @@ namespace AuctionSniper.MainWindow
             if (Environment.GetCommandLineArgs().Length < 2)
                 throw new Exception("Must specify an auction id!");
 
-            AuctionId = int.Parse(Environment.GetCommandLineArgs()[1]);
+            AuctionId = Environment.GetCommandLineArgs()[1];
 
             JoinAuction();
         }
@@ -87,6 +87,7 @@ namespace AuctionSniper.MainWindow
                                     new AuctionMessageTranslator(
                                         jid,
                                         new AuctionSniperService(_auction,
+                                            AuctionId,
                                             this)));
 
             _auction.XmppService = _xmpp;
@@ -103,7 +104,7 @@ namespace AuctionSniper.MainWindow
             SnipersStatus.SetStatusText("Lost");
         }
 
-        public void SniperBidding()
+        public void SniperBidding(SniperState ss)
         {
             SnipersStatus.SetStatusText("Bidding");
         }
