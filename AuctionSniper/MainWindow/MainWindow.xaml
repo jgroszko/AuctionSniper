@@ -3,14 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <DockPanel>
-        <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem>
-                <TextBlock
-                    Name="statusText"
-                    Text="{Binding Status}"
-                    VerticalAlignment="Bottom"/>
-            </StatusBarItem>
-        </StatusBar>
+        <DataGrid
+            Name="snipersTable"
+            ItemsSource="{Binding SnipersStatus}"
+            IsReadOnly="True">
+        </DataGrid>
     </DockPanel>
-    
 </Window>

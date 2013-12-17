@@ -51,21 +51,17 @@ namespace AuctionSniper.MainWindow
             }
         }
 
-        private string _status;
-        public string Status
+        private SnipersDataSet _snipersStatus = new SnipersDataSet();
+        public SnipersDataSet SnipersStatus
         {
             get
             {
-                return _status;
+                return _snipersStatus;
             }
             set
             {
-                if (_status != value)
-                {
-                    _status = value;
-
-                    RaisePropertyChanged(() => this.Status);
-                }
+                _snipersStatus = value;
+                RaisePropertyChanged(() => this.SnipersStatus);
             }
         }
 
@@ -99,27 +95,27 @@ namespace AuctionSniper.MainWindow
 
             _auction.Join();
 
-            Status = "Joining";
+            SnipersStatus.SetStatusText("Joining");
         }
 
         public void SniperLost()
         {
-            Status = "Lost";
+            SnipersStatus.SetStatusText("Lost");
         }
 
         public void SniperBidding()
         {
-            Status = "Bidding";
+            SnipersStatus.SetStatusText("Bidding");
         }
 
         public void SniperWinning()
         {
-            Status = "Winning";
+            SnipersStatus.SetStatusText("Winning");
         }
 
         public void SniperWon()
         {
-            Status = "Won";
+            SnipersStatus.SetStatusText("Won");
         }
     }
 }

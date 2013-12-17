@@ -18,8 +18,9 @@ namespace AuctionSniperTests
 
         public virtual void ShowsSniperStatus(string statusText)
         {
-            var statusLabel = Window.Get<Label>("statusText");
-            Assert.AreEqual(statusText, statusLabel.Text);
+            var elem = Window.AutomationElement;
+            var table = Window.Get<ListView>("snipersTable");
+            Assert.AreEqual(statusText, table.Rows[0].Cells[0].Text);
         }
     }
 }
