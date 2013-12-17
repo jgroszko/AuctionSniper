@@ -45,7 +45,7 @@ namespace AuctionSniper.Common.Services
             {
                 int bid = price + increment;
                 _auction.Bid(bid);
-                _listener.SniperBidding(new SniperState(_itemId, price, bid));
+                _listener.SniperStateChanged(new SniperSnapshot(_itemId, price, bid, SniperState.Bidding));
             }
         }
     }

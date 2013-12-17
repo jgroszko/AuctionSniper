@@ -54,7 +54,7 @@
     <Compile Include="SnipersDataSet.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SniperState.cs" />
+    <Compile Include="SniperSnapshot.cs" />
     <Compile Include="SOLProtocol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

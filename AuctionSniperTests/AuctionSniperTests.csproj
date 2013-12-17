@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FakeItEasy">
+      <HintPath>..\packages\FakeItEasy.1.15.0\lib\net40\FakeItEasy.dll</HintPath>
+    </Reference>
     <Reference Include="jabber-net">
       <HintPath>..\External Dependencies\jabber-net\jabber-net.dll</HintPath>
     </Reference>

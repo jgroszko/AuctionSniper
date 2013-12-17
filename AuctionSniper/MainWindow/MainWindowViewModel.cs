@@ -104,7 +104,7 @@ namespace AuctionSniper.MainWindow
             SnipersStatus.SetStatusText("Lost");
         }
 
-        public void SniperBidding(SniperState ss)
+        public void SniperStateChanged(SniperSnapshot ss)
         {
             SnipersStatus.SetStatusText("Bidding");
         }
