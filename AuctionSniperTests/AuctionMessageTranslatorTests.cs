@@ -1,8 +1,8 @@
 ﻿using AuctionSniper.Common;
 using AuctionSniper.Common.Interfaces;
+using FakeItEasy;
 using jabber.protocol.client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,14 +18,14 @@ namespace AuctionSniperTests
     {
         public const string SNIPER_ID = "sniper_id";
 
-        Mock<IAuctionEventListener> mock;
+        IAuctionEventListener auctionEventListener;
         AuctionMessageTranslator amt;
 
         [TestInitialize]
         public void Initialize()
         {
-            mock = new Mock<IAuctionEventListener>();
-            amt = new AuctionMessageTranslator(SNIPER_ID, mock.Object);
+            auctionEventListener = A.Fake<IAuctionEventListener>();
+            amt = new AuctionMessageTranslator(SNIPER_ID, auctionEventListener);
         }
 
         [TestMethod]
@@ -36,7 +36,7 @@ namespace AuctionSniperTests
                 Body = SOLProtocol.CLOSE_EVENT_FORMAT
             });
 
-            mock.Verify(f => f.AuctionClosed(), Times.Once());
+            A.CallTo(() => auctionEventListener.AuctionClosed()).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [TestMethod]
@@ -48,7 +48,7 @@ namespace AuctionSniperTests
                     0, 0, "other bidder")
             });
 
-            mock.Verify(f => f.CurrentPrice(0, 0, PriceSource.FromOtherBidder), Times.Once());
+            A.CallTo(() => auctionEventListener.CurrentPrice(0, 0, PriceSource.FromOtherBidder)).MustHaveHappened(Repeated.Exactly.Once);
         }
 
         [TestMethod]
@@ -60,7 +60,7 @@ namespace AuctionSniperTests
                     0, 0, SNIPER_ID)
             });
 
-            mock.Verify(f => f.CurrentPrice(0, 0, PriceSource.FromSniper), Times.Once());
+            A.CallTo(() => auctionEventListener.CurrentPrice(0, 0, PriceSource.FromSniper)).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 }
