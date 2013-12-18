@@ -16,16 +16,14 @@ namespace AuctionSniper.Common.Services
 {
     public class XmppService : IDisposable
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(Auction));
+
         public const string XMPP_RESOURCE = "Auction Sniper";
 
         JabberClient _jc;
 
-        public IMessageListener _listener;
-
-        public XmppService(string jid, string password, string host, IMessageListener listener)
+        public XmppService(string jid, string password, string host)
         {
-            _listener = listener;
-
             _jc = new JabberClient();
             _jc.Resource = XMPP_RESOURCE;
             _jc.AutoStartTLS = false;
@@ -36,8 +34,20 @@ namespace AuctionSniper.Common.Services
             _jc.Server = j.Server;
             _jc.Password = password;
             _jc.NetworkHost = host;
+        }
 
-            _jc.OnMessage += new MessageHandler(Message);
+        public void AddMessageHandler(IMessageListener listener, string user = null)
+        {
+            _jc.OnMessage += new MessageHandler((sender, message) =>
+            {
+                if(!string.IsNullOrEmpty(message.Body) &&
+                    (user == null || user == message.From.Bare))
+                {
+                    log.Info(string.Format("Message from {0}: {1}", message.From.Bare, message.Body));
+
+                    listener.ProcessMessage(message);
+                }
+            });
         }
 
         public void Connect()
@@ -61,15 +71,13 @@ namespace AuctionSniper.Common.Services
 
         public void Message(string to, string body)
         {
+            log.Info(string.Format("Message to {0}: {1}", to, body));
             _jc.Message(to, body);
         }
 
-        protected void Message(object sender, Message message)
+        public string GetUser()
         {
-            if (!string.IsNullOrEmpty(message.Body))
-            {
-                _listener.ProcessMessage(message);
-            }
+            return _jc.JID.Bare;
         }
     }
 }

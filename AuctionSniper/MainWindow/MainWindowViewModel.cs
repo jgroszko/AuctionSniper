@@ -4,6 +4,7 @@ using AuctionSniper.Common.Services;
 using jabber.protocol.client;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
@@ -20,34 +21,26 @@ namespace AuctionSniper.MainWindow
         public const string CONFIG_JID = "jid";
         public const string CONFIG_PASSWORD = "password";
         public const string CONFIG_HOST = "host";
+        public const string CONFIG_AUCTION_USER_FORMAT = "auction-user";
 
         private XmppService _xmpp;
         private Auction _auction;
         
-        private string _auctionId;
-        public string AuctionId
+        private string[] _auctionIds;
+        public string[] AuctionIds
         {
             get
             {
-                return _auctionId;
+                return _auctionIds;
             }
             set
             {
-                if (_auctionId != value)
+                if (_auctionIds != value)
                 {
-                    _auctionId = value;
+                    _auctionIds = value;
 
-                    RaisePropertyChanged(() => this.AuctionId);
+                    RaisePropertyChanged(() => this.AuctionIds);
                 }
-            }
-        }
-
-        public string AuctionUser
-        {
-            get
-            {
-                return string.Format("auction-{0}@jgroszko-server",
-                    AuctionId);
             }
         }
 
@@ -70,29 +63,32 @@ namespace AuctionSniper.MainWindow
             if (Environment.GetCommandLineArgs().Length < 2)
                 throw new Exception("Must specify an auction id!");
 
-            AuctionId = Environment.GetCommandLineArgs()[1];
-
-            JoinAuction();
-        }
-
-        public void JoinAuction()
-        {
-            _auction = new Auction(AuctionUser);
+            AuctionIds = Environment.GetCommandLineArgs()[1].Split(new char[] { ',' });
 
             string jid = ConfigurationManager.AppSettings[CONFIG_JID];
-
             _xmpp = new XmppService(jid,
                                     ConfigurationManager.AppSettings[CONFIG_PASSWORD],
-                                    ConfigurationManager.AppSettings[CONFIG_HOST],
-                                    new AuctionMessageTranslator(
-                                        jid,
-                                        new AuctionSniperService(AuctionId,
-                                            _auction,
-                                            SnipersStatus)));
-
-            _auction.XmppService = _xmpp;
+                                    ConfigurationManager.AppSettings[CONFIG_HOST]);
 
             _xmpp.Connect();
+
+            foreach (string itemId in AuctionIds)
+            {
+                JoinAuction(itemId);
+            }
+        }
+
+        public void JoinAuction(string itemId)
+        {
+            string auctionUser = string.Format(ConfigurationManager.AppSettings[CONFIG_AUCTION_USER_FORMAT], itemId);
+
+            _auction = new Auction(auctionUser);
+
+            _xmpp.AddMessageHandler(new AuctionMessageTranslator(_xmpp.GetUser(),
+                new AuctionSniperService(itemId, _auction, SnipersStatus)),
+                auctionUser);
+
+            _auction.XmppService = _xmpp;
 
             _auction.Join();
         }

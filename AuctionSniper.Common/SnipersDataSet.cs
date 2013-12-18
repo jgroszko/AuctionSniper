@@ -25,17 +25,32 @@ namespace AuctionSniper.Common
             Columns.Add("Last Price");
             Columns.Add("Last Bid");
             Columns.Add("Status");
+        }
 
-            Rows.Add(new object[] { });
+        public virtual void AddSniper(SniperSnapshot sniperSnapshot)
+        {
+            Rows.Add(new object[] {
+                sniperSnapshot.ItemId,
+                sniperSnapshot.LastBid,
+                sniperSnapshot.LastPrice,
+                sniperSnapshot.State
+            });
         }
 
         public virtual void SniperStateChanged(SniperSnapshot sniperSnapshot)
         {
-            Debug.WriteLine("State Changed, ID " + sniperSnapshot.ItemId);
-            Rows[0][(int)Column.ITEM_IDENTIFIER] = sniperSnapshot.ItemId;
-            Rows[0][(int)Column.LAST_BID] = sniperSnapshot.LastBid;
-            Rows[0][(int)Column.LAST_PRICE] = sniperSnapshot.LastPrice;
-            Rows[0][(int)Column.SNIPER_STATUS] = sniperSnapshot.State.ToString();
+            foreach(DataRow row in Rows)
+            {
+                if(row[0].ToString() == sniperSnapshot.ItemId)
+                {
+                    row[(int)Column.LAST_BID] = sniperSnapshot.LastBid;
+                    row[(int)Column.LAST_PRICE] = sniperSnapshot.LastPrice;
+                    row[(int)Column.SNIPER_STATUS] = sniperSnapshot.State.ToString();
+                    return;
+                }
+            }
+
+            throw new Exception("Unknown auction id");
         }
     }
 }

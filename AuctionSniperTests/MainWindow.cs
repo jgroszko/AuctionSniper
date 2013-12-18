@@ -26,16 +26,32 @@ namespace AuctionSniperTests
 
         public virtual void ShowsSniperStatus(string itemId, string status)
         {
-            Assert.AreEqual(itemId, Grid.Rows[0].Cells[0].Text);
-            Assert.AreEqual(status, Grid.Rows[0].Cells[3].Text);
+            foreach(ListViewRow row in Grid.Rows)
+            {
+                if(row.Cells[0].Text == itemId)
+                {
+                    Assert.AreEqual(status, row.Cells[3].Text);
+                    return;
+                }
+            }
+
+            Assert.Fail(string.Format("Could not find auction {0}", itemId));
         }
 
         public virtual void ShowsSniperStatus(string itemId, int lastPrice, int lastBid, string status)
         {
-            Assert.AreEqual(itemId,                 Grid.Rows[0].Cells[0].Text);
-            Assert.AreEqual(lastPrice.ToString(),   Grid.Rows[0].Cells[1].Text);
-            Assert.AreEqual(lastBid.ToString(),     Grid.Rows[0].Cells[2].Text);
-            Assert.AreEqual(status,                 Grid.Rows[0].Cells[3].Text);
+            foreach (ListViewRow row in Grid.Rows)
+            {
+                if (row.Cells[0].Text == itemId)
+                {
+                    Assert.AreEqual(lastPrice.ToString(), row.Cells[1].Text);
+                    Assert.AreEqual(lastBid.ToString(), row.Cells[2].Text);
+                    Assert.AreEqual(status, row.Cells[3].Text);
+                    return;
+                }
+            }
+
+            Assert.Fail(string.Format("Could not find auction {0}", itemId));
         }
 
         public virtual void HasTitle(string title)

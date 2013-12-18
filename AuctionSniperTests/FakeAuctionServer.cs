@@ -41,8 +41,9 @@ namespace AuctionSniperTests
             _xmpp = new XmppService(
                 string.Format(ITEM_ID_AS_LOGIN, ItemId),
                 AUCTION_PASSWORD,
-                XMPP_HOSTNAME,
-                _listener);
+                XMPP_HOSTNAME);
+
+            _xmpp.AddMessageHandler(_listener);
         }
 
         public void StartSellingItem()

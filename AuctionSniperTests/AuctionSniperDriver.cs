@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AuctionSniper.Common;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,8 +28,6 @@ namespace AuctionSniperTests
         WorkSession _workSession;
         ScreenRepository _screenRepository;
 
-        private string _auctionId;
-
         public MainWindow Window
         {
             get
@@ -37,25 +36,26 @@ namespace AuctionSniperTests
             }
         }
 
-        public void StartBiddingIn(string auctionId)
+        public void StartBiddingIn(params FakeAuctionServer[] auctions)
         {
-            _auctionId = auctionId;
-
-            LaunchApplication();
+            LaunchApplication(string.Join(",", auctions.Select(a => a.ItemId).ToArray()));
 
             Window.HasTitle(WINDOW_TITLE);
             Window.GridHasColumnTitles();
 
-            Window.ShowsSniperStatus(_auctionId, AuctionSniper.Common.Constants.STATUS_JOINING);
+            foreach (FakeAuctionServer auction in auctions)
+            {
+                Window.ShowsSniperStatus(auction.ItemId, AuctionSniper.Common.Constants.STATUS_JOINING);
+            }
         }
 
         #region Helpers
-        private void LaunchApplication()
+        private void LaunchApplication(string auctionId)
         {
             var directoryName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var location = Path.Combine(directoryName, @"AuctionSniper.exe");
             _app = Application.Launch(new ProcessStartInfo(
-                location, _auctionId));
+                location, auctionId));
 
             var workConfiguration =
                 new WorkConfiguration
@@ -80,24 +80,24 @@ namespace AuctionSniperTests
         }
         #endregion
 
-        public virtual void ShowsSniperHasLostAuction()
+        public virtual void ShowsSniperHasLostAuction(FakeAuctionServer auction)
         {
-            Window.ShowsSniperStatus(_auctionId, AuctionSniper.Common.Constants.STATUS_LOST);
+            Window.ShowsSniperStatus(auction.ItemId, AuctionSniper.Common.Constants.STATUS_LOST);
         }
 
-        public virtual void ShowsSniperHasWonAuction(int lastPrice)
+        public virtual void ShowsSniperHasWonAuction(FakeAuctionServer auction, int lastPrice)
         {
-            Window.ShowsSniperStatus(_auctionId, lastPrice, lastPrice, AuctionSniper.Common.Constants.STATUS_WON);
+            Window.ShowsSniperStatus(auction.ItemId, lastPrice, lastPrice, AuctionSniper.Common.Constants.STATUS_WON);
         }
 
-        public virtual void HasShownSniperIsBidding(int lastPrice, int lastBid)
+        public virtual void HasShownSniperIsBidding(FakeAuctionServer auction, int lastPrice, int lastBid)
         {
-            Window.ShowsSniperStatus(_auctionId, lastPrice, lastBid, AuctionSniper.Common.Constants.STATUS_BIDDING);
+            Window.ShowsSniperStatus(auction.ItemId, lastPrice, lastBid, AuctionSniper.Common.Constants.STATUS_BIDDING);
         }
 
-        public virtual void HasShownSniperIsWinning(int winningBid)
+        public virtual void HasShownSniperIsWinning(FakeAuctionServer auction, int winningBid)
         {
-            Window.ShowsSniperStatus(_auctionId, winningBid, winningBid, AuctionSniper.Common.Constants.STATUS_WINNING);
+            Window.ShowsSniperStatus(auction.ItemId, winningBid, winningBid, AuctionSniper.Common.Constants.STATUS_WINNING);
         }
     }
 }

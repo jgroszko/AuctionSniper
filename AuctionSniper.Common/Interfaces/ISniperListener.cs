@@ -8,6 +8,7 @@ namespace AuctionSniper.Common.Interfaces
 {
     public interface ISniperListener
     {
+        void AddSniper(SniperSnapshot ss);
         void SniperStateChanged(SniperSnapshot ss);
     }
 }

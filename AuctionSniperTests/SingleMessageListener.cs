@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,17 +23,11 @@ namespace AuctionSniperTests
 
         public Message ReceivesAMessage()
         {
+            _event.WaitOne(TimeSpan.FromSeconds(10));
+
             Message result;
-            if(_msg.TryDequeue(out result))
-            {
-                return result;
-            }
-            else
-            {
-                _event.WaitOne(TimeSpan.FromSeconds(10));
-                _msg.TryDequeue(out result);
-                return result;
-            }
+            _msg.TryDequeue(out result);
+            return result;
         }
 
         public void ProcessMessage(Message message)

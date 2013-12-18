@@ -20,8 +20,9 @@ namespace AuctionSniper.Common.Services
             _itemId = itemId;
             _auction = auction;
             _listener = listener;
+
             _snapshot = SniperSnapshot.Joining(itemId);
-            NotifyChange();
+            _listener.AddSniper(_snapshot);
         }
 
         private void NotifyChange()
