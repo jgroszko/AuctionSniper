@@ -86,8 +86,8 @@ namespace AuctionSniper.MainWindow
                                     ConfigurationManager.AppSettings[CONFIG_HOST],
                                     new AuctionMessageTranslator(
                                         jid,
-                                        new AuctionSniperService(_auction,
-                                            AuctionId,
+                                        new AuctionSniperService(AuctionId,
+                                            _auction,
                                             this)));
 
             _auction.XmppService = _xmpp;
@@ -107,11 +107,6 @@ namespace AuctionSniper.MainWindow
         public void SniperStateChanged(SniperSnapshot ss)
         {
             SnipersStatus.SetStatusText("Bidding");
-        }
-
-        public void SniperWinning()
-        {
-            SnipersStatus.SetStatusText("Winning");
         }
 
         public void SniperWon()

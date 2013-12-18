@@ -25,7 +25,7 @@ namespace AuctionSniperTests
         {
             sniperListener = A.Fake<ISniperListener>();
             auction = A.Fake<Auction>(x => x.WithArgumentsForConstructor(new object[] {string.Empty}));
-            sniper = new AuctionSniperService(auction, ITEM_ID, sniperListener);
+            sniper = new AuctionSniperService(ITEM_ID, auction, sniperListener);
         }
 
         [TestMethod]
@@ -33,7 +33,9 @@ namespace AuctionSniperTests
         {
             sniper.AuctionClosed();
 
-            A.CallTo(() => sniperListener.SniperLost()).MustHaveHappened(Repeated.AtLeast.Once);
+            A.CallTo(() => sniperListener.SniperStateChanged(
+                A<SniperSnapshot>.That.HasState(SniperState.Lost)
+                )).MustHaveHappened(Repeated.AtLeast.Once);
         }
 
         [TestMethod]
@@ -47,9 +49,11 @@ namespace AuctionSniperTests
                 using (scope.OrderedAssertions())
                 {
                     A.CallTo(() => sniperListener.SniperStateChanged(
-                        A<SniperSnapshot>.That.Matches(ss => ss.State == SniperState.Bidding)))
-                            .MustHaveHappened(Repeated.AtLeast.Once);
-                    A.CallTo(() => sniperListener.SniperLost()).MustHaveHappened(Repeated.Exactly.Once);
+                        A<SniperSnapshot>.That.HasState(SniperState.Bidding)
+                        )).MustHaveHappened(Repeated.AtLeast.Once);
+                    A.CallTo(() => sniperListener.SniperStateChanged(
+                        A<SniperSnapshot>.That.HasState(SniperState.Lost)
+                        )).MustHaveHappened(Repeated.AtLeast.Once);
                 }
             }
         }
@@ -64,8 +68,12 @@ namespace AuctionSniperTests
 
                 using(scope.OrderedAssertions())
                 {
-                    A.CallTo(() => sniperListener.SniperWinning()).MustHaveHappened(Repeated.NoMoreThan.Once);
-                    A.CallTo(() => sniperListener.SniperWon()).MustHaveHappened(Repeated.Exactly.Once);
+                    A.CallTo(() => sniperListener.SniperStateChanged(
+                        A<SniperSnapshot>.That.HasState(SniperState.Winning)
+                        )).MustHaveHappened(Repeated.AtLeast.Once);
+                    A.CallTo(() => sniperListener.SniperStateChanged(
+                        A<SniperSnapshot>.That.HasState(SniperState.Won)
+                        )).MustHaveHappened(Repeated.AtLeast.Once);
                 }
             }
         }
@@ -73,12 +81,21 @@ namespace AuctionSniperTests
         [TestMethod]
         public void ReportsIsWinningWhenCurrentPriceComesFromSniper()
         {
-            int price = 1001;
-            int increment = 25;
+            using (var scope = Fake.CreateScope())
+            {
+                sniper.CurrentPrice(123, 12, PriceSource.FromOtherBidder);
+                sniper.CurrentPrice(135, 45, PriceSource.FromSniper);
 
-            sniper.CurrentPrice(price, increment, PriceSource.FromSniper);
-
-            A.CallTo(() => sniperListener.SniperWinning()).MustHaveHappened(Repeated.AtLeast.Once);
+                using (scope.OrderedAssertions())
+                {
+                    A.CallTo(() => sniperListener.SniperStateChanged(
+                        A<SniperSnapshot>.That.Matches(ss => ss.State == SniperState.Bidding)
+                        )).MustHaveHappened(Repeated.AtLeast.Once);
+                    A.CallTo(() => sniperListener.SniperStateChanged(
+                        A<SniperSnapshot>.That.Matches(ss => ss.State == SniperState.Winning)
+                        )).MustHaveHappened(Repeated.AtLeast.Once);
+                }
+            }
         }
 
         [TestMethod]

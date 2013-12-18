@@ -66,6 +66,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ArgumentConstraintManagerExtensions.cs" />
     <Compile Include="AuctionSniperDriver.cs" />
     <Compile Include="AuctionSniperEndToEndTests.cs" />
     <Compile Include="AuctionMessageTranslatorTests.cs" />

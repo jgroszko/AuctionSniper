@@ -13,40 +13,41 @@ namespace AuctionSniper.Common.Services
         private Auction _auction;
         private string _itemId;
 
-        private bool _isWinning = false;
+        private SniperSnapshot _snapshot;
 
-        public AuctionSniperService(Auction auction, string itemId, ISniperListener listener)
+        public AuctionSniperService(string itemId, Auction auction, ISniperListener listener)
         {
-            _auction = auction;
             _itemId = itemId;
+            _auction = auction;
             _listener = listener;
+            _snapshot = SniperSnapshot.Joining(itemId);
+        }
+
+        private void NotifyChange()
+        {
+            _listener.SniperStateChanged(_snapshot);
         }
 
         public void AuctionClosed()
         {
-            if(_isWinning)
-            {
-                _listener.SniperWon();
-            }
-            else
-            {
-                _listener.SniperLost();
-            }
+            _snapshot = _snapshot.Closed();
+            NotifyChange();
         }
 
         public void CurrentPrice(int price, int increment, PriceSource priceSource)
         {
-            _isWinning = priceSource == PriceSource.FromSniper;
-            if(_isWinning)
+            switch(priceSource)
             {
-                _listener.SniperWinning();
+                case PriceSource.FromSniper:
+                    _snapshot = _snapshot.Winning(price);
+                    break;
+                case PriceSource.FromOtherBidder:
+                    int bid = price + increment;
+                    _auction.Bid(bid);
+                    _snapshot = _snapshot.Bidding(price, bid);
+                    break;
             }
-            else
-            {
-                int bid = price + increment;
-                _auction.Bid(bid);
-                _listener.SniperStateChanged(new SniperSnapshot(_itemId, price, bid, SniperState.Bidding));
-            }
+            NotifyChange();
         }
     }
 }
