@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using System.Diagnostics;
+using AuctionSniper.Common.Interfaces;
 
 namespace AuctionSniper.Common
 {
-    public class SnipersDataSet : DataTable
+    public class SnipersDataSet : DataTable, ISniperListener
     {
         public enum Column
         {
@@ -24,25 +26,16 @@ namespace AuctionSniper.Common
             Columns.Add("Last Bid");
             Columns.Add("Status");
 
-            Rows.Add(new object[] {
-                string.Empty,
-                0,
-                0,
-                SniperState.Joining
-            });
+            Rows.Add(new object[] { });
         }
 
-        public virtual void SetStatusText(string statusText)
+        public virtual void SniperStateChanged(SniperSnapshot sniperSnapshot)
         {
-            Rows[0][(int)Column.SNIPER_STATUS] = statusText;
-        }
-
-        public virtual void SniperStatusChanged(SniperSnapshot sniperState)
-        {
-            Rows[0][(int)Column.ITEM_IDENTIFIER] = sniperState.ItemId;
-            Rows[0][(int)Column.LAST_BID] = sniperState.LastBid;
-            Rows[0][(int)Column.LAST_PRICE] = sniperState.LastPrice;
-            Rows[0][(int)Column.SNIPER_STATUS] = sniperState.State.ToString();
+            Debug.WriteLine("State Changed, ID " + sniperSnapshot.ItemId);
+            Rows[0][(int)Column.ITEM_IDENTIFIER] = sniperSnapshot.ItemId;
+            Rows[0][(int)Column.LAST_BID] = sniperSnapshot.LastBid;
+            Rows[0][(int)Column.LAST_PRICE] = sniperSnapshot.LastPrice;
+            Rows[0][(int)Column.SNIPER_STATUS] = sniperSnapshot.State.ToString();
         }
     }
 }

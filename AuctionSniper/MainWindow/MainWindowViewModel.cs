@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace AuctionSniper.MainWindow
 {
-    class MainWindowViewModel : BaseViewModel, ISniperListener
+    class MainWindowViewModel : BaseViewModel
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(MainWindowViewModel));
 
@@ -88,30 +88,13 @@ namespace AuctionSniper.MainWindow
                                         jid,
                                         new AuctionSniperService(AuctionId,
                                             _auction,
-                                            this)));
+                                            SnipersStatus)));
 
             _auction.XmppService = _xmpp;
 
             _xmpp.Connect();
 
             _auction.Join();
-
-            SnipersStatus.SetStatusText("Joining");
-        }
-
-        public void SniperLost()
-        {
-            SnipersStatus.SetStatusText("Lost");
-        }
-
-        public void SniperStateChanged(SniperSnapshot ss)
-        {
-            SnipersStatus.SetStatusText("Bidding");
-        }
-
-        public void SniperWon()
-        {
-            SnipersStatus.SetStatusText("Won");
         }
     }
 }

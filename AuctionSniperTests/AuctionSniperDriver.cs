@@ -21,6 +21,7 @@ namespace AuctionSniperTests
     public class AuctionSniperDriver : IDisposable
     {
         public const string SNIPER_ID = "sniper@jgroszko-server";
+        public const string WINDOW_TITLE = "Auction Sniper";
 
         Application _app;
         WorkSession _workSession;
@@ -32,7 +33,7 @@ namespace AuctionSniperTests
         {
             get
             {
-                return _screenRepository.Get<MainWindow>("MainWindow", InitializeOption.NoCache);
+                return _screenRepository.Get<MainWindow>(WINDOW_TITLE, InitializeOption.NoCache);
             }
         }
 
@@ -41,6 +42,9 @@ namespace AuctionSniperTests
             _auctionId = auctionId;
 
             LaunchApplication();
+
+            Window.HasTitle(WINDOW_TITLE);
+            Window.GridHasColumnTitles();
 
             Window.ShowsSniperStatus(_auctionId, AuctionSniper.Common.Constants.STATUS_JOINING);
         }

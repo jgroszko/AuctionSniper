@@ -31,7 +31,7 @@ namespace AuctionSniperTests
         [TestMethod]
         public void SetsSniperValuesInColumns()
         {
-            _snipersDataSet.SniperStatusChanged(new SniperSnapshot(ITEM_ID, 555, 666, SniperState.Bidding));
+            _snipersDataSet.SniperStateChanged(new SniperSnapshot(ITEM_ID, 555, 666, SniperState.Bidding));
 
             Assert.AreEqual(ITEM_ID, _snipersDataSet.Rows[0][(int)SnipersDataSet.Column.ITEM_IDENTIFIER]);
             Assert.AreEqual("555", _snipersDataSet.Rows[0][(int)SnipersDataSet.Column.LAST_PRICE]);
